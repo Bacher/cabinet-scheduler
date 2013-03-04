@@ -1,17 +1,16 @@
-﻿using System;
+﻿using Medium;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 using System.Xml;
-using System.Threading;
-
-using Medium;
 
 namespace Scheduler
 {
@@ -21,6 +20,9 @@ namespace Scheduler
         private static string AGENCY40_URL = @"http://www.agency40.ru/mysystem/";
         private static string STATE_FILE_NAME = @"Scheduler.state";
         private static string SETTINGS_FILE_NAME = @"Scheduler.settings";
+        private static string ACCOUNTS_FILE_NAME = @"Scheduler.accounts.txt";
+        private KeyValuePair<string, string> Ag40Account;
+        private KeyValuePair<string, string> KHAccount;
         private TasksManager tasksManager = new TasksManager();
         private DataTable table = new DataTable();
         private BackgroundWorker KHRemover = new BackgroundWorker();
@@ -48,6 +50,8 @@ namespace Scheduler
             LockThisInstance();
 
             LoadSettings();
+
+            LoadAccounts();
 
             KHRemover.WorkerReportsProgress = true;
             KHRemover.DoWork += KHRemover_DoWork;
@@ -77,7 +81,29 @@ namespace Scheduler
             RefreshTable();
         }
 
-        void KHRemover_DoWork(object sender, DoWorkEventArgs e)
+        private void LoadAccounts()
+        {
+            string[] lines = File.ReadAllLines(ACCOUNTS_FILE_NAME);
+            foreach (var line in lines)
+            {
+                if (line.StartsWith("[")) continue;
+
+                var parms = line.Split('=');
+                if (parms.Length == 3)
+                {
+                    if (parms[0] == "Agency40")
+                    {
+                        Ag40Account = new KeyValuePair<string, string>(parms[1], parms[2]);
+                    }
+                    else if (parms[0] == "KalugaHouse")
+                    {
+                        KHAccount = new KeyValuePair<string, string>(parms[1], parms[2]);
+                    }
+                }
+            }
+        }
+
+        private void KHRemover_DoWork(object sender, DoWorkEventArgs e)
         {
             var bw = sender as BackgroundWorker;
             var task = e.Argument as TaskState;
@@ -99,7 +125,7 @@ namespace Scheduler
             var khMedium = new KalugaHouseMedium(KALUGA_HOUSE_URL);
             try
             {
-                khMedium.Login("", "");
+                khMedium.Login(KHAccount.Key, KHAccount.Value);
             }
             catch (NetMediumException ex)
             {
@@ -110,7 +136,11 @@ namespace Scheduler
             {
                 Log("KalugaHouse.ru логин или пароль не подходят.");
                 return;
-
+            }
+            catch (Exception ex)
+            {
+                Log(ex);
+                return;
             }
 
             for (int i = 0; i < rowCount; ++i)
@@ -127,13 +157,13 @@ namespace Scheduler
             e.Result = task;
         }
 
-        void KHRemover_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void KHRemover_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             var task = e.UserState as TaskState;
             task.workingPercent = e.ProgressPercentage;
         }
 
-        void KHRemover_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void KHRemover_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var task = e.Result as TaskState;
             if (e.Error != null)
@@ -210,7 +240,7 @@ namespace Scheduler
 
         private void timerRun_Tick(object sender, EventArgs e)
         {
-            //CheckWorkForRemoving();
+            CheckWorkForRemoving();
 
             DateTime now = DateTime.Now.AddSeconds(15);
 
@@ -236,7 +266,7 @@ namespace Scheduler
                         {
                             try
                             {
-                                ag40.Login("", "");
+                                ag40.Login(Ag40Account.Key, Ag40Account.Value);
                             }
                             catch (NetMediumException ex)
                             {
@@ -248,12 +278,27 @@ namespace Scheduler
                                 Log("Agency40.ru логин или пароль не подходят.", true);
                                 return;
                             }
+                            catch (Exception ex)
+                            {
+                                Log("Неопознаная ошибка. Прозьба обратиться к разработчику. [" + ex.Message + "]", true);
+                                continue;
+                            }
                         }
 
-                        var xmdDoc = Agency40Medium.GetPartOfXml(Path.Combine("tasks", task.Info.Id + ".xml"), task.Index);
+                        XmlDocument xmlDoc;
                         try
                         {
-                            ag40.UploadXML(xmdDoc);
+                            xmlDoc = Agency40Medium.GetPartOfXml(Path.Combine("tasks", task.Info.Id + ".xml"), task.Index);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log(ex);
+                            continue;
+                        }
+
+                        try
+                        {
+                            ag40.UploadXML(xmlDoc);
                             task.error = false;
                             task.Index++;
                             task.lastSend = now;
@@ -263,6 +308,10 @@ namespace Scheduler
                         {
                             Log("Agency40.ru не отвечает.", true);
                             task.error = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log(ex);
                         }
                     }
                 }
@@ -306,6 +355,11 @@ namespace Scheduler
             }
         }
 
+        private void Log(Exception ex)
+        {
+            Log(string.Format("Неопознаная ошибка. Прозьба обратиться к разработчику. [ {0}, Source: {1}, StackTrace: {2} ]", ex.Message, ex.Source, ex.StackTrace), true);
+        }
+
         private void btnToogleLog_Click(object sender, EventArgs e)
         {
             if (richLog.Visible)
@@ -319,7 +373,7 @@ namespace Scheduler
                 MainForm.ActiveForm.Height -= 154;
                 btnShowAddForm.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
                 btnToogleLog.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-                gridViewTasks.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left |AnchorStyles.Right;
+                gridViewTasks.Anchor = AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
                 btnPause.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
                 groupBox1.Anchor = AnchorStyles.Bottom;
                 btnToogleLog.Text = "v";
@@ -344,6 +398,7 @@ namespace Scheduler
         }
 
         private int alertPulse = 0;
+
         private void timerAlert_Tick(object sender, EventArgs e)
         {
             alertPulse++;
