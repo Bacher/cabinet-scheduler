@@ -56,7 +56,7 @@
             // btnShowAddForm
             // 
             this.btnShowAddForm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnShowAddForm.Location = new System.Drawing.Point(649, 190);
+            this.btnShowAddForm.Location = new System.Drawing.Point(872, 360);
             this.btnShowAddForm.Name = "btnShowAddForm";
             this.btnShowAddForm.Size = new System.Drawing.Size(117, 23);
             this.btnShowAddForm.TabIndex = 0;
@@ -77,7 +77,7 @@
             this.gridViewTasks.Name = "gridViewTasks";
             this.gridViewTasks.ReadOnly = true;
             this.gridViewTasks.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridViewTasks.Size = new System.Drawing.Size(877, 171);
+            this.gridViewTasks.Size = new System.Drawing.Size(1100, 341);
             this.gridViewTasks.TabIndex = 1;
             // 
             // contextMenu
@@ -114,17 +114,17 @@
             // 
             this.timerTableRefresher.Enabled = true;
             this.timerTableRefresher.Interval = 6000;
-            this.timerTableRefresher.Tick += new System.EventHandler(this.timerTableRefresher_Tick);
+            this.timerTableRefresher.Tick += new System.EventHandler(this.RefreshTable);
             // 
             // richLog
             // 
             this.richLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.richLog.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.richLog.Location = new System.Drawing.Point(12, 218);
+            this.richLog.Location = new System.Drawing.Point(12, 388);
             this.richLog.Name = "richLog";
             this.richLog.ReadOnly = true;
-            this.richLog.Size = new System.Drawing.Size(877, 141);
+            this.richLog.Size = new System.Drawing.Size(1100, 141);
             this.richLog.TabIndex = 2;
             this.richLog.Text = "";
             // 
@@ -132,7 +132,7 @@
             // 
             this.btnToogleLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnToogleLog.BackColor = System.Drawing.SystemColors.Control;
-            this.btnToogleLog.Location = new System.Drawing.Point(12, 189);
+            this.btnToogleLog.Location = new System.Drawing.Point(12, 359);
             this.btnToogleLog.Name = "btnToogleLog";
             this.btnToogleLog.Size = new System.Drawing.Size(21, 23);
             this.btnToogleLog.TabIndex = 3;
@@ -148,7 +148,7 @@
             // btnPause
             // 
             this.btnPause.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPause.Location = new System.Drawing.Point(772, 190);
+            this.btnPause.Location = new System.Drawing.Point(995, 360);
             this.btnPause.Name = "btnPause";
             this.btnPause.Size = new System.Drawing.Size(117, 23);
             this.btnPause.TabIndex = 9;
@@ -164,7 +164,7 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.numMaxHour);
             this.groupBox1.Controls.Add(this.numMinHour);
-            this.groupBox1.Location = new System.Drawing.Point(261, 181);
+            this.groupBox1.Location = new System.Drawing.Point(373, 351);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(277, 34);
             this.groupBox1.TabIndex = 16;
@@ -203,6 +203,7 @@
             // numMaxHour
             // 
             this.numMaxHour.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.numMaxHour.Enabled = false;
             this.numMaxHour.Location = new System.Drawing.Point(182, 11);
             this.numMaxHour.Maximum = new decimal(new int[] {
             24,
@@ -213,7 +214,7 @@
             this.numMaxHour.Size = new System.Drawing.Size(44, 20);
             this.numMaxHour.TabIndex = 17;
             this.numMaxHour.Value = new decimal(new int[] {
-            22,
+            21,
             0,
             0,
             0});
@@ -221,6 +222,7 @@
             // numMinHour
             // 
             this.numMinHour.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.numMinHour.Enabled = false;
             this.numMinHour.Location = new System.Drawing.Point(104, 11);
             this.numMinHour.Maximum = new decimal(new int[] {
             24,
@@ -231,7 +233,7 @@
             this.numMinHour.Size = new System.Drawing.Size(47, 20);
             this.numMinHour.TabIndex = 16;
             this.numMinHour.Value = new decimal(new int[] {
-            10,
+            9,
             0,
             0,
             0});
@@ -240,7 +242,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(901, 370);
+            this.ClientSize = new System.Drawing.Size(1124, 540);
             this.Controls.Add(this.gridViewTasks);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnPause);

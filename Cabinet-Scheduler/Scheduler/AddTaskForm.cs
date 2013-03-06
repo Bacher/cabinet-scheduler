@@ -36,28 +36,36 @@ namespace Scheduler
                 return;
             }
 
-            if (checkApartment.Checked && DateTime.Now.AddDays(4).Date > datetimeEnd.Value.Date)
+            if (DateTime.Now >= datetimeEnd.Value.AddMinutes(1))
             {
-                MessageBox.Show("Дата выполнения не может быть меньше чем через 4 дня");
+                MessageBox.Show("Дата выполнения должна быть в будущем");
                 datetimeEnd.Focus();
                 return;
             }
 
+            //if (checkApartment.Checked && DateTime.Now.AddDays(4).Date > datetimeEnd.Value.Date)
+            //{
+            //    MessageBox.Show("Дата выполнения не может быть меньше чем через 4 дня");
+            //    datetimeEnd.Focus();
+            //    return;
+            //}
+
             Directory.CreateDirectory(TASKS_FOLDER_NAME);
 
             string id = getRandomFileName();
-            string xmlFilename = Path.Combine(TASKS_FOLDER_NAME, id + ".info.data");
+            string xmlFileName = Path.Combine(TASKS_FOLDER_NAME, id + ".xml");
+            string infoFileName = Path.Combine(TASKS_FOLDER_NAME, id + ".info.data");
 
-            File.Copy(txtXmlFilePath.Text, Path.Combine(TASKS_FOLDER_NAME, id + ".xml"));
+            File.Copy(txtXmlFilePath.Text, xmlFileName);
 
             var taskInfo = new TaskInfo();
             taskInfo.id = id;
             taskInfo.apartment = checkApartment.Checked;
             taskInfo.creation = DateTime.Now;
             taskInfo.end = datetimeEnd.Value;
-            taskInfo.count = getXMLCountOfRows(xmlFilename);
+            taskInfo.count = getXMLCountOfRows(xmlFileName);
 
-            taskInfo.Serialize(xmlFilename);
+            taskInfo.Serialize(infoFileName);
             
             this.ResultTaskInfo = taskInfo;
             this.DialogResult = System.Windows.Forms.DialogResult.OK;

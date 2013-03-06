@@ -106,7 +106,7 @@
             // 
             // datetimeEnd
             // 
-            this.datetimeEnd.CustomFormat = "dd/MM/yyyy hh:mm";
+            this.datetimeEnd.CustomFormat = "dd/MM/yyyy HH:mm";
             this.datetimeEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.datetimeEnd.Location = new System.Drawing.Point(119, 81);
             this.datetimeEnd.Name = "datetimeEnd";

@@ -21,7 +21,7 @@ namespace Scheduler
 
         public void Save()
         {
-
+            state.Serialize(Path.Combine("tasks", info.id + ".state.data"));
         }
     }
 }

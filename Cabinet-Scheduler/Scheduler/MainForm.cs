@@ -5,10 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -18,9 +15,10 @@ namespace Scheduler
     {
         private static string KALUGA_HOUSE_URL = @"http://www.kalugahouse.ru/cabinet/";
         private static string AGENCY40_URL = @"http://www.agency40.ru/mysystem/";
-        private static string STATE_FILE_NAME = @"Scheduler.state";
         private static string SETTINGS_FILE_NAME = @"Scheduler.settings";
         private static string ACCOUNTS_FILE_NAME = @"Scheduler.accounts.txt";
+        private TimeSpan startOfDay = new DateTime(2000, 1, 1, 9, 0, 0).TimeOfDay;
+        private TimeSpan endOfDay = new DateTime(2000, 1, 1, 20, 59, 0).TimeOfDay;
         private KeyValuePair<string, string> Ag40Account;
         private KeyValuePair<string, string> KHAccount;
         private TasksManager tasksManager = new TasksManager();
@@ -40,8 +38,6 @@ namespace Scheduler
 
                 Width = int.Parse(lines[1].Split('=')[1]);
                 Height = int.Parse(lines[2].Split('=')[1]);
-                numMinHour.Value = int.Parse(lines[3].Split('=')[1]);
-                numMaxHour.Value = int.Parse(lines[4].Split('=')[1]);
             }
         }
 
@@ -51,16 +47,14 @@ namespace Scheduler
 
             LoadSettings();
 
-            //if (!LoadAccounts())
-            //{
-            //    this.Close();
-            //    return;
-            //}
+            if (!LoadAccounts())
+            {
+                this.Close();
+                return;
+            }
 
-            KHRemover.WorkerReportsProgress = true;
             KHRemover.DoWork += KHRemover_DoWork;
             KHRemover.RunWorkerCompleted += KHRemover_RunWorkerCompleted;
-            KHRemover.ProgressChanged += KHRemover_ProgressChanged;
 
             table.Columns.Add("Id", typeof(string));
             table.Columns.Add("Status", typeof(string));
@@ -78,9 +72,7 @@ namespace Scheduler
             gridViewTasks.Columns[4].HeaderText = "Дата добавления";
             gridViewTasks.Columns[5].HeaderText = "Начало обработки";
 
-            //taskManager.Load();
-
-            RefreshTable();
+            RefreshTable(sender, null);
         }
 
         private bool LoadAccounts()
@@ -118,76 +110,91 @@ namespace Scheduler
 
         private void KHRemover_DoWork(object sender, DoWorkEventArgs e)
         {
-            //var bw = sender as BackgroundWorker;
-            //var task = e.Argument as TaskState;
+            var task = e.Argument as Task;
 
-            //var xmlDoc = new XmlDocument();
+            //
 
-            //xmlDoc.Load(Path.Combine("tasks", task.Info.Id + ".xml"));
+            var count = task.info.count;
+            var remainingMinutes = task.info.calcRemainingTimeMinutes();
 
-            //var rowDataElement = xmlDoc.DocumentElement.GetElementsByTagName("ROWDATA");
+            var THREEDAYDELAYMINUTES = 5;// 3 * 12 * 60;
+            remainingMinutes -= THREEDAYDELAYMINUTES;
+            var deleteIndex = 0;
 
-            //if (rowDataElement.Count != 1)
-            //{
-            //    throw new FormatException("Неправильный формат файла.");
-            //}
+            var deletedChunks = task.state.deletedChunks;
+            if (deletedChunks.Count > 0)
+                deleteIndex = deletedChunks[deletedChunks.Count - 1].Value;
 
-            //var rows = rowDataElement[0].ChildNodes;
-            //var rowCount = rows.Count;
+            count -= deleteIndex;
 
-            //var khMedium = new KalugaHouseMedium(KALUGA_HOUSE_URL);
-            //try
-            //{
-            //    khMedium.Login(KHAccount.Key, KHAccount.Value);
-            //}
-            //catch (NetMediumException ex)
-            //{
-            //    Log("KalugaHouse.ru не отвечает.");
-            //    return;
-            //}
-            //catch (LoginMediumException)
-            //{
-            //    Log("KalugaHouse.ru логин или пароль не подходят.");
-            //    return;
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log(ex);
-            //    return;
-            //}
+            var countToDelete = (int)Math.Ceiling((double)(count * 60) / remainingMinutes);
 
-            //for (int i = 0; i < rowCount; ++i)
-            //{
-            //    var secId = rows[i].Attributes["RLT_MAIN_ID"].Value;
+            if (countToDelete > count) countToDelete = count;
 
-            //    secId = secId.Substring(0, secId.Length - 5);
+            // Удаление
+            if(!RemoveFromKH(task, deleteIndex, countToDelete))
+                return;
 
-            //    khMedium.RemoveItemBySecondId(secId);
+            task.state.deletedChunks.Add(new KeyValuePair<DateTime, int>(DateTime.Now, deleteIndex + countToDelete));
 
-            //    bw.ReportProgress(i * 100 / rowCount, task);
-            //}
-
-            //e.Result = task;
+            e.Result = task;
         }
 
-        private void KHRemover_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private bool RemoveFromKH(Task task, int deleteIndex, int countToDelete)
         {
-            //var task = e.UserState as TaskState;
-            //task.workingPercent = e.ProgressPercentage;
+            var xmlDoc = new XmlDocument();
+
+            xmlDoc.Load(Path.Combine("tasks", task.info.id + ".xml"));
+
+            var rowDataElement = xmlDoc.DocumentElement.GetElementsByTagName("ROWDATA");
+
+            if (rowDataElement.Count != 1)
+            {
+                throw new FormatException("Неправильный формат файла.");
+            }
+
+            var rows = rowDataElement[0].ChildNodes;
+
+            var khMedium = new KalugaHouseMedium(KALUGA_HOUSE_URL);
+            try
+            {
+                khMedium.Login(KHAccount.Key, KHAccount.Value);
+            }
+            catch (NetMediumException ex)
+            {
+                Log("KalugaHouse.ru не отвечает.");
+                return false;
+            }
+            catch (LoginMediumException)
+            {
+                Log("KalugaHouse.ru логин или пароль не подходят.");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Log(ex);
+                return false;
+            }
+
+            for (int i = deleteIndex; i < task.info.count && i < deleteIndex + countToDelete; ++i)
+            {
+                var secId = rows[i].Attributes["RLT_MAIN_ID"].Value;
+                secId = secId.Substring(0, secId.Length - 5);
+                khMedium.RemoveItemBySecondId(secId);
+            }
+            return true;
         }
 
         private void KHRemover_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            //var task = e.Result as TaskState;
-            //if (e.Error != null)
-            //{
-            //    task.error = true;
-            //}
-            //if (e.Result != null)
-            //{
-            //    task.khEmpty = true;
-            //    tasksManager.Save(STATE_FILE_NAME);
-            //}
+            var task = e.Result as Task;
+
+            if (e.Result != null)
+            {
+                task.state.backgroundDeleting = false;
+                Log("BW Removing: " + DateTime.Now.ToString());
+                task.Save();
+            }
         }
 
         private void btnShowAddForm_Click(object sender, EventArgs e)
@@ -200,15 +207,20 @@ namespace Scheduler
 
                 var taskState = new TaskState();
                 taskState.index = 0;
-                taskState.addTimeout = DateTime.Now.AddDays(3);
-                taskState.removeTimeout = DateTime.Now;
-                taskState.Serialize(Path.Combine("tasks", taskInfo.id));
+                if (taskInfo.apartment)
+                {
+                    var THREE = 0;//3;
+                    taskState.addTimeout = DateTime.Now.AddDays(THREE);
+                }
+                else
+                    taskState.addTimeout = DateTime.Now;
+                taskState.Serialize(Path.Combine("tasks", taskInfo.id + ".state.data"));
 
                 var task = new Task(taskInfo.id);
                 tasksManager.tasks.Add(task);
                 tasksManager.Save();
 
-                RefreshTable();
+                RefreshTable(sender, null);
 
                 Log("Задача успешно добавлена. Количество добавленых записей: " + task.info.count + ".");
             }
@@ -227,111 +239,29 @@ namespace Scheduler
             }
         }
 
-        private void RefreshTable()
+        private void RefreshTable(object sender, EventArgs e)
         {
-            //table.Clear();
-            //foreach (var task in tasksManager.tasks)
-            //{
-            //    string status = "";
-            //    if (!task.khEmpty)
-            //        status = task.working ? "Удаление из KalugaHouse: " + task.workingPercent + "%" : "Ожидание удаления из базы KalugaHouse";
-            //    else
-            //    {
-            //        if (task.Index == task.Info.Count)
-            //            status = "Обработка завершена";
-            //        else if (DateTime.Now < task.Info.Start)
-            //            status = "Обработка отложена";
-            //        else
-            //            status = "В обработке: " + (100 * task.Index / task.Info.Count) + "%";
-            //    }
-
-            //    if (task.error)
-            //    {
-            //        status += ". Операция завершилась с ошибкой";
-            //    }
-
-            //    table.Rows.Add(task.Info.Id, task.Info.Type, status, task.Index, task.Info.Count, task.Info.Added, task.Info.Start);
-            //}
+            table.Clear();
+            foreach (var task in tasksManager.tasks)
+            {
+                table.Rows.Add(
+                    task.info.id,
+                    string.Format("{0}{1}", task.info.apartment ? "[Квартиры] " : "", task.state.index == task.info.count ? "Завершено" : "В обработке"),
+                    task.state.index,
+                    task.info.count,
+                    task.info.creation,
+                    task.info.end);
+            }
         }
 
         private void timerRun_Tick(object sender, EventArgs e)
         {
-            CheckWorkForRemoving();
-
-            //DateTime now = DateTime.Now.AddSeconds(15);
-
-            //if (now.Hour < numMinHour.Value || now.Hour >= numMaxHour.Value)
-            //    return;
-
-            //bool[] flags = { false, false, false, false, false };
-
-            //Agency40Medium ag40 = new Agency40Medium(AGENCY40_URL);
-            //bool logged = false;
-
-            //for (int i = 0; i < tasksManager.tasks.Count; ++i)
-            //{
-            //    var task = tasksManager.tasks[i];
-
-            //    if (task.khEmpty && now.Date >= task.Info.Start && flags[(int)task.Info.Type] == false && task.Index < task.Info.Count)
-            //    {
-            //        if (now >= task.lastSend.AddMinutes(task.Info.Interval))
-            //        {
-            //            flags[(int)task.Info.Type] = true;
-
-            //            if (!logged)
-            //            {
-            //                try
-            //                {
-            //                    ag40.Login(Ag40Account.Key, Ag40Account.Value);
-            //                }
-            //                catch (NetMediumException ex)
-            //                {
-            //                    Log("Agency40.ru не отвечает.", true);
-            //                    return;
-            //                }
-            //                catch (LoginMediumException)
-            //                {
-            //                    Log("Agency40.ru логин или пароль не подходят.", true);
-            //                    return;
-            //                }
-            //                catch (Exception ex)
-            //                {
-            //                    Log("Неопознаная ошибка. Прозьба обратиться к разработчику. [" + ex.Message + "]", true);
-            //                    continue;
-            //                }
-            //            }
-
-            //            XmlDocument xmlDoc;
-            //            try
-            //            {
-            //                xmlDoc = Agency40Medium.GetPartOfXml(Path.Combine("tasks", task.Info.Id + ".xml"), task.Index);
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                Log(ex);
-            //                continue;
-            //            }
-
-            //            try
-            //            {
-            //                ag40.UploadXML(xmlDoc);
-            //                task.error = false;
-            //                task.Index++;
-            //                task.lastSend = now;
-            //                tasksManager.Save(STATE_FILE_NAME);
-            //            }
-            //            catch (NetMediumException ex)
-            //            {
-            //                Log("Agency40.ru не отвечает.", true);
-            //                task.error = true;
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                Log(ex);
-            //            }
-            //        }
-            //    }
-            //}
+            var now = DateTime.Now;
+            if (now.TimeOfDay >= startOfDay && now.TimeOfDay < endOfDay)
+            {
+                CheckWorkForRemoving();
+                CheckSend();
+            }
         }
 
         private void CheckWorkForRemoving()
@@ -343,23 +273,109 @@ namespace Scheduler
             {
                 var task = tasksManager.tasks[i];
 
-                lock (task.state.locked)
-                {
-                    
+                if (task.info.apartment && task.state.GetDeletingIndex() < task.info.count)
+                {       
+                    var newTimestamp = task.state.GetLastDeletingDate().AddHours(1);
+                    if(newTimestamp.TimeOfDay > endOfDay)
+                        newTimestamp.AddHours(12);
 
-                
-                    if (!task.state.backgroundDeleting)
+                    if (newTimestamp <= DateTime.Now)
                     {
-                        task.state.backgroundDeleting = true;
-                        KHRemover.RunWorkerAsync(task);
+                        if (!task.state.backgroundDeleting)
+                        {
+                            task.state.backgroundDeleting = true;
+                            if(!KHRemover.IsBusy)
+                                KHRemover.RunWorkerAsync(task);
+                        }
                     }
                 }
             }
         }
 
-        private void timerTableRefresher_Tick(object sender, EventArgs e)
+        private void CheckSend()
         {
-            RefreshTable();
+            DateTime now = DateTime.Now;
+
+            Agency40Medium ag40 = new Agency40Medium(AGENCY40_URL);
+            bool logged = false;
+
+            for (int i = 0, taskCount = tasksManager.tasks.Count; i < taskCount; ++i)
+            {
+                var task = tasksManager.tasks[i];
+
+                if (task.state.addTimeout > now || task.state.index >= task.info.count)
+                    continue;
+
+                if (task.info.apartment && !task.state.CheckAvailableDeleteIndex(now, task.state.index))
+                    continue;
+
+                if (!logged)
+                {
+                    try
+                    {
+                        ag40.Login(Ag40Account.Key, Ag40Account.Value);
+                    }
+                    catch (NetMediumException ex)
+                    {
+                        Log("Agency40.ru не отвечает.", true);
+                        return;
+                    }
+                    catch (LoginMediumException)
+                    {
+                        Log("Agency40.ru логин или пароль не подходят.", true);
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("Неопознаная ошибка. Прозьба обратиться к разработчику. [" + ex.Message + "]", true);
+                        continue;
+                    }
+                }
+
+                if (!task.info.apartment)
+                {
+                    // Удаление записи
+                    if(!RemoveFromKH(task, task.state.index, 1))
+                        continue;
+                }
+
+                XmlDocument xmlDoc;
+                try
+                {
+                    xmlDoc = Agency40Medium.GetPartOfXml(Path.Combine("tasks", task.info.id + ".xml"), task.state.index);
+                }
+                catch (Exception ex)
+                {
+                    Log(ex);
+                    continue;
+                }
+
+                try
+                {
+                    Log("Send " + DateTime.Now.ToString());
+                    ag40.UploadXML(xmlDoc);
+                    task.state.index++;
+                    if (task.state.index < task.info.count)
+                        task.state.addTimeout = CalculateNextAddTimeout(task);
+                    task.Save();
+                }
+                catch (NetMediumException ex)
+                {
+                    Log("Agency40.ru не отвечает.", true);
+                }
+                catch (Exception ex)
+                {
+                    Log(ex);
+                }
+            }
+        }
+
+        private DateTime CalculateNextAddTimeout(Task task)
+        {
+            var remainingMinutes = task.info.calcRemainingTimeMinutes();
+            var remainingCount = task.info.count - task.state.index;
+
+            return DateTime.Now.AddSeconds(remainingMinutes * 60 / remainingCount);
         }
 
         private void Log(string message, bool alert = false)
@@ -438,7 +454,7 @@ namespace Scheduler
                 btnPause.Text = "Возобновить";
                 timerRun.Enabled = false;
                 timerTableRefresher.Enabled = false;
-                RefreshTable();
+                RefreshTable(sender, null);
                 gridViewTasks.Enabled = false;
                 Log("Работа приостановлена.");
             }
@@ -459,8 +475,6 @@ namespace Scheduler
             text.AppendLine("[SETTINGS]");
             text.AppendFormat("{0}={1}\n", "width", Width);
             text.AppendFormat("{0}={1}\n", "height", Height);
-            text.AppendFormat("{0}={1}\n", "minhour", numMinHour.Value);
-            text.AppendFormat("{0}={1}\n", "maxhour", numMaxHour.Value);
 
             var writer = new StreamWriter(SETTINGS_FILE_NAME);
             writer.Write(text);
@@ -505,26 +519,25 @@ namespace Scheduler
 
         private void RemoveMenuItem_Click(object sender, EventArgs e)
         {
-            //if (MessageBox.Show("Вы действительно хотите удалить задачу?", "Удаление задачи", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
-            //{
+            if (MessageBox.Show("Вы действительно хотите удалить задачу?", "Удаление задачи", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
+            {
+                var rowIndex = gridViewTasks.SelectedRows[0].Index;
 
-            //    var rowIndex = gridViewTasks.SelectedRows[0].Index;
+                var id = table.Rows[rowIndex]["Id"];
 
-            //    var id = table.Rows[rowIndex]["Id"];
+                for (int i = 0; i < tasksManager.tasks.Count; ++i)
+                {
+                    var task = tasksManager.tasks[i];
+                    if (task.info.id == id)
+                    {
+                        tasksManager.tasks.Remove(task);
+                        tasksManager.Save();
 
-            //    for (int i = 0; i < tasksManager.tasks.Count; ++i)
-            //    {
-            //        var task = tasksManager.tasks[i];
-            //        if (task.Info.Id == id)
-            //        {
-            //            tasksManager.tasks.Remove(task);
-            //            tasksManager.Save(STATE_FILE_NAME);
-            //            return;
-            //        }
-            //    }
-
-            //    RefreshTable();
-            //}
+                        RefreshTable(sender, null);
+                        return;
+                    }
+                }
+            }
         }
     }
 }
