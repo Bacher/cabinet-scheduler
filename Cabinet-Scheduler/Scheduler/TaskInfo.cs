@@ -1,64 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Scheduler
 {
-    public enum TaskType : int
-    {
-        Квартиры = 0,
-        Комнаты = 1,
-        Участоки = 2,
-        Дома = 3,
-        Другое = 4
-    }
-
+    [Serializable]
     public class TaskInfo
     {
-        private static string INFO_FILE_HEADER = "[Task Info]";
+        public string id;
+        public bool apartment;
+        public DateTime creation;
+        public DateTime end;
+        public int count;
 
-        public string Id;
-        public int Count;
-        public TaskType Type;
-        public DateTime Start;
-        public int Interval;
-        public DateTime Added;
-
-        public void Save(string fileName)
+        public int calcRemainingTimeMinutes()
         {
-            var info = new StringBuilder();
+            var now = DateTime.Now;
 
-            info.AppendLine(INFO_FILE_HEADER);
-            info.AppendFormat("{0}={1}\n", "id", Id);
-            info.AppendFormat("{0}={1}\n", "count", Count);
-            info.AppendFormat("{0}={1}\n", "type", (int)Type);
-            info.AppendFormat("{0}={1}\n", "start", Start);
-            info.AppendFormat("{0}={1}\n", "interval", Interval);
-            info.AppendFormat("{0}={1}\n", "added", Added);
+            int sum = 0;
 
-            var writer = new StreamWriter(fileName);
-            writer.Write(info);
-            writer.Close();
+            var endOfday = new DateTime(now.Year, now.Month, now.Day, 20, 59, 59);
+            if (endOfday > now && endOfday <= end)
+                sum += (int)(endOfday - now).TotalMinutes;
+
+            if (now.AddDays(1).Date < end.Date)
+                sum += (int)(end.Date - now.AddDays(1).Date).TotalDays * 12 * 60;
+
+            var startOfEndDay = new DateTime(end.Year, end.Month, end.Day, 9, 0, 0);
+            if(end > startOfEndDay)
+                sum += (int)(end - startOfEndDay).TotalMinutes;
+
+            return sum;
         }
 
-        public void Load(string fileName)
+        public void Serialize(string fileName)
         {
-            string[] lines = File.ReadAllLines(fileName);
+            new BinaryFormatter().Serialize(new FileStream(fileName, FileMode.Create), this);
+        }
 
-            if(!lines[0].Equals(INFO_FILE_HEADER))
-            {
-                throw new FormatException("Неправильный формат файла.");
-            }
-
-            Id = lines[1].Split('=')[1];
-            Count = int.Parse(lines[2].Split('=')[1]);
-            Type = (TaskType)int.Parse(lines[3].Split('=')[1]);
-            Start = DateTime.Parse(lines[4].Split('=')[1]);
-            Interval = int.Parse(lines[5].Split('=')[1]);
-            Added = DateTime.Parse(lines[6].Split('=')[1]);
+        public static TaskInfo Unserialize(string fileName)
+        {
+            return new BinaryFormatter().Deserialize(new FileStream(fileName, FileMode.Open)) as TaskInfo;
         }
     }
 }

@@ -32,16 +32,12 @@
             this.label1 = new System.Windows.Forms.Label();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.dialogOpenXmlFile = new System.Windows.Forms.OpenFileDialog();
-            this.label2 = new System.Windows.Forms.Label();
-            this.numDelay = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
-            this.comboType = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.numInterval = new System.Windows.Forms.NumericUpDown();
             this.btnOk = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numInterval)).BeginInit();
+            this.checkApartment = new System.Windows.Forms.CheckBox();
+            this.datetimeEnd = new System.Windows.Forms.DateTimePicker();
+            this.label2 = new System.Windows.Forms.Label();
+            this.labelCountOfRows = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // txtXmlFilePath
@@ -50,6 +46,7 @@
             this.txtXmlFilePath.Name = "txtXmlFilePath";
             this.txtXmlFilePath.Size = new System.Drawing.Size(353, 20);
             this.txtXmlFilePath.TabIndex = 0;
+            this.txtXmlFilePath.Validating += new System.ComponentModel.CancelEventHandler(this.txtXmlFilePath_Validating);
             // 
             // label1
             // 
@@ -75,79 +72,10 @@
             this.dialogOpenXmlFile.Filter = "All Files|*|Xml Files|*.xml";
             this.dialogOpenXmlFile.FilterIndex = 2;
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 60);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(108, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Отложить на (дней):";
-            // 
-            // numDelay
-            // 
-            this.numDelay.Location = new System.Drawing.Point(165, 58);
-            this.numDelay.Maximum = new decimal(new int[] {
-            14,
-            0,
-            0,
-            0});
-            this.numDelay.Name = "numDelay";
-            this.numDelay.Size = new System.Drawing.Size(52, 20);
-            this.numDelay.TabIndex = 4;
-            this.numDelay.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 87);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(74, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Тип записей:";
-            // 
-            // comboType
-            // 
-            this.comboType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboType.FormattingEnabled = true;
-            this.comboType.Location = new System.Drawing.Point(165, 84);
-            this.comboType.Name = "comboType";
-            this.comboType.Size = new System.Drawing.Size(121, 21);
-            this.comboType.TabIndex = 6;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 113);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(148, 13);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "Интервал отправки (минут):";
-            // 
-            // numInterval
-            // 
-            this.numInterval.Location = new System.Drawing.Point(166, 111);
-            this.numInterval.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numInterval.Name = "numInterval";
-            this.numInterval.Size = new System.Drawing.Size(51, 20);
-            this.numInterval.TabIndex = 8;
-            this.numInterval.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            // 
             // btnOk
             // 
-            this.btnOk.Location = new System.Drawing.Point(290, 137);
+            this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOk.Location = new System.Drawing.Point(290, 114);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 9;
@@ -157,7 +85,8 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(371, 137);
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancel.Location = new System.Drawing.Point(371, 114);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 10;
@@ -165,28 +94,60 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
+            // checkApartment
+            // 
+            this.checkApartment.AutoSize = true;
+            this.checkApartment.Location = new System.Drawing.Point(12, 58);
+            this.checkApartment.Name = "checkApartment";
+            this.checkApartment.Size = new System.Drawing.Size(76, 17);
+            this.checkApartment.TabIndex = 11;
+            this.checkApartment.Text = "Квартиры";
+            this.checkApartment.UseVisualStyleBackColor = true;
+            // 
+            // datetimeEnd
+            // 
+            this.datetimeEnd.CustomFormat = "dd/MM/yyyy hh:mm";
+            this.datetimeEnd.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.datetimeEnd.Location = new System.Drawing.Point(119, 81);
+            this.datetimeEnd.Name = "datetimeEnd";
+            this.datetimeEnd.Size = new System.Drawing.Size(160, 20);
+            this.datetimeEnd.TabIndex = 12;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(12, 87);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(101, 13);
+            this.label2.TabIndex = 13;
+            this.label2.Text = "Дата завершения:";
+            // 
+            // labelCountOfRows
+            // 
+            this.labelCountOfRows.AutoSize = true;
+            this.labelCountOfRows.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelCountOfRows.Location = new System.Drawing.Point(12, 119);
+            this.labelCountOfRows.Name = "labelCountOfRows";
+            this.labelCountOfRows.Size = new System.Drawing.Size(0, 13);
+            this.labelCountOfRows.TabIndex = 14;
+            // 
             // AddTaskForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(458, 171);
+            this.ClientSize = new System.Drawing.Size(458, 148);
+            this.Controls.Add(this.labelCountOfRows);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.datetimeEnd);
+            this.Controls.Add(this.checkApartment);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
-            this.Controls.Add(this.numInterval);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.comboType);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.numDelay);
-            this.Controls.Add(this.label2);
             this.Controls.Add(this.btnBrowse);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtXmlFilePath);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "AddTaskForm";
             this.Text = "Добавить задачу";
-            this.Load += new System.EventHandler(this.AddTaskForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.numDelay)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numInterval)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -198,13 +159,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.OpenFileDialog dialogOpenXmlFile;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown numDelay;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ComboBox comboType;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown numInterval;
         private System.Windows.Forms.Button btnOk;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.CheckBox checkApartment;
+        private System.Windows.Forms.DateTimePicker datetimeEnd;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelCountOfRows;
     }
 }

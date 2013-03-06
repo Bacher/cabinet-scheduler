@@ -55,6 +55,7 @@
     <Compile Include="TaskTests.cs" />
     <Compile Include="KalugaHouseMediumTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TimeTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Medium\Medium.csproj">

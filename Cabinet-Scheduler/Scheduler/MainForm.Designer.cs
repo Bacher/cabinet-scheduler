@@ -31,6 +31,9 @@
             this.components = new System.ComponentModel.Container();
             this.btnShowAddForm = new System.Windows.Forms.Button();
             this.gridViewTasks = new System.Windows.Forms.DataGridView();
+            this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ShowPublicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RemoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timerRun = new System.Windows.Forms.Timer(this.components);
             this.timerTableRefresher = new System.Windows.Forms.Timer(this.components);
             this.richLog = new System.Windows.Forms.RichTextBox();
@@ -43,14 +46,11 @@
             this.label1 = new System.Windows.Forms.Label();
             this.numMaxHour = new System.Windows.Forms.NumericUpDown();
             this.numMinHour = new System.Windows.Forms.NumericUpDown();
-            this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ShowPublicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.RemoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewTasks)).BeginInit();
+            this.contextMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxHour)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinHour)).BeginInit();
-            this.contextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnShowAddForm
@@ -80,10 +80,34 @@
             this.gridViewTasks.Size = new System.Drawing.Size(877, 171);
             this.gridViewTasks.TabIndex = 1;
             // 
+            // contextMenu
+            // 
+            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ShowPublicMenuItem,
+            this.RemoveMenuItem});
+            this.contextMenu.Name = "contextMenu";
+            this.contextMenu.Size = new System.Drawing.Size(260, 48);
+            this.contextMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenu_Closed);
+            this.contextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_Opening);
+            // 
+            // ShowPublicMenuItem
+            // 
+            this.ShowPublicMenuItem.Name = "ShowPublicMenuItem";
+            this.ShowPublicMenuItem.Size = new System.Drawing.Size(259, 22);
+            this.ShowPublicMenuItem.Text = "Показать записи с публикациями";
+            this.ShowPublicMenuItem.Click += new System.EventHandler(this.ShowPublicMenuItem_Click);
+            // 
+            // RemoveMenuItem
+            // 
+            this.RemoveMenuItem.Name = "RemoveMenuItem";
+            this.RemoveMenuItem.Size = new System.Drawing.Size(259, 22);
+            this.RemoveMenuItem.Text = "Удалить задачу";
+            this.RemoveMenuItem.Click += new System.EventHandler(this.RemoveMenuItem_Click);
+            // 
             // timerRun
             // 
             this.timerRun.Enabled = true;
-            this.timerRun.Interval = 30000;
+            this.timerRun.Interval = 5000;
             this.timerRun.Tick += new System.EventHandler(this.timerRun_Tick);
             // 
             // timerTableRefresher
@@ -212,30 +236,6 @@
             0,
             0});
             // 
-            // contextMenu
-            // 
-            this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ShowPublicMenuItem,
-            this.RemoveMenuItem});
-            this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(260, 70);
-            this.contextMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenu_Closed);
-            this.contextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_Opening);
-            // 
-            // ShowPublicMenuItem
-            // 
-            this.ShowPublicMenuItem.Name = "ShowPublicMenuItem";
-            this.ShowPublicMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.ShowPublicMenuItem.Text = "Показать записи с публикациями";
-            this.ShowPublicMenuItem.Click += new System.EventHandler(this.ShowPublicMenuItem_Click);
-            // 
-            // RemoveMenuItem
-            // 
-            this.RemoveMenuItem.Name = "RemoveMenuItem";
-            this.RemoveMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.RemoveMenuItem.Text = "Удалить задачу";
-            this.RemoveMenuItem.Click += new System.EventHandler(this.RemoveMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -252,11 +252,11 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.gridViewTasks)).EndInit();
+            this.contextMenu.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxHour)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinHour)).EndInit();
-            this.contextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

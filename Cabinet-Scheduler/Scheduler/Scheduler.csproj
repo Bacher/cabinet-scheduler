@@ -58,8 +58,10 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Task.cs" />
     <Compile Include="TaskInfo.cs" />
     <Compile Include="TasksManager.cs" />
+    <Compile Include="TaskState.cs" />
     <Compile Include="TextForm.cs">
       <SubType>Form</SubType>
     </Compile>

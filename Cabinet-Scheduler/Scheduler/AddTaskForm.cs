@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
 using System.Xml;
 
 namespace Scheduler
 {
     public partial class AddTaskForm : Form
     {
-
         private static string TASKS_FOLDER_NAME = "tasks";
 
         public TaskInfo ResultTaskInfo;
@@ -31,6 +23,7 @@ namespace Scheduler
             if (dialogOpenXmlFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 txtXmlFilePath.Text = dialogOpenXmlFile.FileName;
+                txtXmlFilePath_Validating(sender, null);
             }
         }
 
@@ -43,24 +36,29 @@ namespace Scheduler
                 return;
             }
 
+            if (checkApartment.Checked && DateTime.Now.AddDays(4).Date > datetimeEnd.Value.Date)
+            {
+                MessageBox.Show("Дата выполнения не может быть меньше чем через 4 дня");
+                datetimeEnd.Focus();
+                return;
+            }
+
             Directory.CreateDirectory(TASKS_FOLDER_NAME);
 
             string id = getRandomFileName();
-            string xmlFileName = Path.Combine(TASKS_FOLDER_NAME, id + ".xml");
-            string metaFileName = Path.Combine(TASKS_FOLDER_NAME, id + ".meta");
+            string xmlFilename = Path.Combine(TASKS_FOLDER_NAME, id + ".info.data");
 
-            File.Copy(txtXmlFilePath.Text, xmlFileName);
+            File.Copy(txtXmlFilePath.Text, Path.Combine(TASKS_FOLDER_NAME, id + ".xml"));
 
             var taskInfo = new TaskInfo();
-            taskInfo.Id = id;
-            taskInfo.Interval = (int)numInterval.Value;
-            taskInfo.Type = (TaskType)comboType.SelectedIndex;
-            taskInfo.Start = DateTime.Now.AddDays((int)numDelay.Value).Date;
-            taskInfo.Count = getXMLCountOfRows(xmlFileName);
-            taskInfo.Added = DateTime.Now;
+            taskInfo.id = id;
+            taskInfo.apartment = checkApartment.Checked;
+            taskInfo.creation = DateTime.Now;
+            taskInfo.end = datetimeEnd.Value;
+            taskInfo.count = getXMLCountOfRows(xmlFilename);
 
-            taskInfo.Save(metaFileName);
-
+            taskInfo.Serialize(xmlFilename);
+            
             this.ResultTaskInfo = taskInfo;
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
 
@@ -73,20 +71,10 @@ namespace Scheduler
             this.Close();
         }
 
-        private void AddTaskForm_Load(object sender, EventArgs e)
-        {
-            for(int i = 0; i < 5; ++i)
-            {
-                comboType.Items.Add((TaskType)i);
-            }
-            comboType.SelectedIndex = 0;
-        }
-
-
         private string getRandomFileName()
         {
             string path = string.Empty;
-            while (path == string.Empty || File.Exists(path))
+            while (path == string.Empty || File.Exists(Path.Combine(TASKS_FOLDER_NAME, path)))
                 path = Path.GetRandomFileName().Substring(0, 8);
 
             return path;
@@ -106,6 +94,18 @@ namespace Scheduler
             }
 
             return rowDataElement[0].ChildNodes.Count;
+        }
+
+        private void txtXmlFilePath_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                int count = getXMLCountOfRows(dialogOpenXmlFile.FileName);
+                labelCountOfRows.Text = string.Format("В файле {0} записи(ей)", count.ToString());
+            }
+            catch {
+                labelCountOfRows.Text = "Файл не подходит";
+            }
         }
     }
 }
