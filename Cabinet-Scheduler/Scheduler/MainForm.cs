@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
@@ -70,7 +71,7 @@ namespace Scheduler
             gridViewTasks.Columns[2].HeaderText = "Отправлено";
             gridViewTasks.Columns[3].HeaderText = "Всего";
             gridViewTasks.Columns[4].HeaderText = "Дата добавления";
-            gridViewTasks.Columns[5].HeaderText = "Начало обработки";
+            gridViewTasks.Columns[5].HeaderText = "Дата завершения";
 
             RefreshTable(sender, null);
         }
@@ -117,7 +118,7 @@ namespace Scheduler
             var count = task.info.count;
             var remainingMinutes = task.info.calcRemainingTimeMinutes();
 
-            var THREEDAYDELAYMINUTES = 5;// 3 * 12 * 60;
+            var THREEDAYDELAYMINUTES = 3 * 12 * 60;
             remainingMinutes -= THREEDAYDELAYMINUTES;
             var deleteIndex = 0;
 
@@ -140,7 +141,7 @@ namespace Scheduler
             e.Result = task;
         }
 
-        private bool RemoveFromKH(Task task, int deleteIndex, int countToDelete)
+        private void CheckEntryAndLog(Task task, int index)
         {
             var xmlDoc = new XmlDocument();
 
@@ -151,6 +152,64 @@ namespace Scheduler
             if (rowDataElement.Count != 1)
             {
                 throw new FormatException("Неправильный формат файла.");
+            }
+
+            var rows = rowDataElement[0].ChildNodes;
+
+            var khMedium = new KalugaHouseMedium(KALUGA_HOUSE_URL);
+            try
+            {
+                khMedium.Login(KHAccount.Key, KHAccount.Value);
+            }
+            catch (NetMediumException ex)
+            {
+                Log("KalugaHouse.ru не отвечает.");
+            }
+            catch (LoginMediumException)
+            {
+                Log("KalugaHouse.ru логин или пароль не подходят.");
+            }
+            catch (Exception ex)
+            {
+                Log(ex);
+            }
+
+            var secId = rows[index].Attributes["RLT_MAIN_ID"].Value;
+            secId = secId.Substring(0, secId.Length - 5);
+
+            try
+            {
+                if (!khMedium.CheckItemBySecondId(secId))
+                {
+                    Log(string.Format("Не получилось добавить запись с ID: {0} в базу KalugaHouse.", secId));
+                }
+            }
+            catch (NotLoggedMediumException)
+            {
+                Log("KalugaHouse.ru логин или пароль не подходят.");
+            }
+            catch (NetMediumException)
+            {
+                Log("KalugaHouse.ru не отвечает.");
+            }
+            catch(Exception ex)
+            {
+                Log(ex);
+            }
+        }
+
+        private bool RemoveFromKH(Task task, int deleteIndex, int countToDelete)
+        {
+            var xmlDoc = new XmlDocument();
+
+            xmlDoc.Load(Path.Combine("tasks", task.info.id + ".xml"));
+
+            var rowDataElement = xmlDoc.DocumentElement.GetElementsByTagName("ROWDATA");
+
+            if (rowDataElement.Count != 1)
+            {
+                Log("Неправильный формат файла.");
+                return false;
             }
 
             var rows = rowDataElement[0].ChildNodes;
@@ -179,7 +238,8 @@ namespace Scheduler
             for (int i = deleteIndex; i < task.info.count && i < deleteIndex + countToDelete; ++i)
             {
                 var secId = rows[i].Attributes["RLT_MAIN_ID"].Value;
-                secId = secId.Substring(0, secId.Length - 5);
+                var nodeId = rows[i].Attributes["RLT_MAIN_NODEID"].Value.Trim();
+                secId = secId.Substring(0, secId.Length - (1 + nodeId.Length));
                 khMedium.RemoveItemBySecondId(secId);
             }
             return true;
@@ -209,7 +269,7 @@ namespace Scheduler
                 taskState.index = 0;
                 if (taskInfo.apartment)
                 {
-                    var THREE = 0;//3;
+                    var THREE = 3;//3;
                     taskState.addTimeout = DateTime.Now.AddDays(THREE);
                 }
                 else
@@ -335,7 +395,7 @@ namespace Scheduler
                 if (!task.info.apartment)
                 {
                     // Удаление записи
-                    if(!RemoveFromKH(task, task.state.index, 1))
+                    if (!RemoveFromKH(task, task.state.index, 1))
                         continue;
                 }
 
@@ -362,11 +422,17 @@ namespace Scheduler
                 catch (NetMediumException ex)
                 {
                     Log("Agency40.ru не отвечает.", true);
+                    continue;
                 }
                 catch (Exception ex)
                 {
                     Log(ex);
+                    continue;
                 }
+
+                // Проверка добавления
+                Thread.Sleep(300);
+                CheckEntryAndLog(task, task.state.index - 1);
             }
         }
 
@@ -380,10 +446,10 @@ namespace Scheduler
 
         private void Log(string message, bool alert = false)
         {
-            string msg = string.Format("{0}: {2}{1}\n", DateTime.Now.ToLongTimeString(), message, alert ? "[!]" : "");
+            string msg = string.Format("[{0}]: {2}{1}\r\n", DateTime.Now.ToLongTimeString(), message, alert ? "[!]" : "");
 
             richLog.AppendText(msg);
-            File.AppendAllText("Scheduler.log", msg + "\n");
+            File.AppendAllText("Scheduler.log", msg);
 
             if (alert && richLog.Visible == false)
             {
@@ -483,28 +549,32 @@ namespace Scheduler
 
         private void ShowPublicMenuItem_Click(object sender, EventArgs e)
         {
-            var rowIndex = gridViewTasks.SelectedRows[0].Index;
-
-            var id = table.Rows[rowIndex]["Id"];
-
-            var list = Agency40Medium.GetPublicItems(Path.Combine("tasks", id + ".xml"));
-
-            string text;
-
-            if (list.Count != 0)
+            if (gridViewTasks.SelectedRows.Count != 0)
             {
-                text = "Записи с публичной пометкой:\n";
-                for (int i = 0; i < list.Count; ++i)
-                {
-                    text += list[i] + "\n";
-                }
-            }
-            else
-                text = "Записи с пометкой отсутствуют.";
+                var rowIndex = gridViewTasks.SelectedRows[0].Index;
 
-            var form = new TextForm();
-            form.SetText(text);
-            form.Show();
+                var id = (string)table.Rows[rowIndex]["Id"];
+                var index = (int)table.Rows[rowIndex]["Index"];
+
+                var list = Agency40Medium.GetPublicItems(Path.Combine("tasks", id + ".xml"), 0, index);
+
+                string text;
+
+                if (list.Count != 0)
+                {
+                    text = "Записи с публичной пометкой:\n";
+                    for (int i = 0; i < list.Count; ++i)
+                    {
+                        text += list[i] + "\n";
+                    }
+                }
+                else
+                    text = "Записи с пометкой отсутствуют.";
+
+                var form = new TextForm();
+                form.SetText(text);
+                form.Show();
+            }
         }
 
         private void contextMenu_Opening(object sender, CancelEventArgs e)

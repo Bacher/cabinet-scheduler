@@ -94,5 +94,41 @@ namespace Medium
 
             return true;
         }
+
+        public bool CheckItemBySecondId(string id)
+        {
+            if (!_logged)
+            {
+                throw new NotLoggedMediumException();
+            }
+
+            var searchResponse = _webClient.GetAsync(_hostUrl + @"?keywords=" + id).Result;
+
+            if (searchResponse.StatusCode != HttpStatusCode.OK)
+            {
+                throw new NetMediumException(searchResponse.StatusCode);
+            }
+
+            var searchResponseBytes = searchResponse.Content.ReadAsByteArrayAsync().Result;
+            var searchResponseString = Encoding.GetEncoding(1251).GetString(searchResponseBytes);
+
+            var posOfStartTable = searchResponseString.IndexOf(@"<table class=""user-items"">");
+            if (posOfStartTable == -1)
+                return false;
+            searchResponseString = searchResponseString.Substring(posOfStartTable);
+
+            var posOfEndTable = searchResponseString.IndexOf(@"</table>");
+            if (posOfStartTable > 0)
+                searchResponseString = searchResponseString.Substring(0, posOfEndTable);
+
+            var matches = new Regex(string.Format(_searchPattern, id)).Match(searchResponseString);
+
+            if (matches.Length == 1)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

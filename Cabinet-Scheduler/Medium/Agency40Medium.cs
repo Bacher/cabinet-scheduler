@@ -110,7 +110,7 @@ namespace Medium
                 return null;
         }
 
-        public static List<string> GetPublicItems(string fileName)
+        public static List<string> GetPublicItems(string fileName, int start, int count)
         {
             var xmlDoc = new XmlDocument();
             xmlDoc.Load(fileName);
@@ -126,7 +126,7 @@ namespace Medium
 
             List<string> list = new List<string>();
 
-            for (int i = 0; i < rowCount; ++i)
+            for (int i = start; i < rowCount && i < start + count; ++i)
             {
                 if (rowDataElement.ChildNodes[i].Attributes["RLT_MAIN_FOREXPORT"].Value == "+")
                 {
