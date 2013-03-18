@@ -570,10 +570,16 @@ namespace Scheduler
         {
             if (gridViewTasks.SelectedRows.Count != 0)
             {
-                var rowIndex = gridViewTasks.SelectedRows[0].Index;
-
-                var id = (string)table.Rows[rowIndex]["Id"];
-                var index = (int)table.Rows[rowIndex]["Index"];
+                string id = (string)gridViewTasks.SelectedRows[0].Cells["Id"].Value;
+                int index = 0;
+                for (int i = 0; i < table.Rows.Count; ++i)
+                {
+                    if (table.Rows[i]["Id"] == id)
+                    {
+                        index = (int)table.Rows[i]["Index"];
+                        break;
+                    }
+                }
 
                 var list = Agency40Medium.GetPublicItems(Path.Combine("tasks", id + ".xml"), 0, index);
 
@@ -610,9 +616,7 @@ namespace Scheduler
         {
             if (MessageBox.Show("Вы действительно хотите удалить задачу?", "Удаление задачи", MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
             {
-                var rowIndex = gridViewTasks.SelectedRows[0].Index;
-
-                var id = table.Rows[rowIndex]["Id"];
+                string id = (string)gridViewTasks.SelectedRows[0].Cells["Id"].Value;
 
                 for (int i = 0; i < tasksManager.tasks.Count; ++i)
                 {

@@ -73,7 +73,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gridViewTasks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridViewTasks.ContextMenuStrip = this.contextMenu;
+            this.gridViewTasks.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.gridViewTasks.Location = new System.Drawing.Point(12, 12);
+            this.gridViewTasks.MultiSelect = false;
             this.gridViewTasks.Name = "gridViewTasks";
             this.gridViewTasks.ReadOnly = true;
             this.gridViewTasks.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
@@ -86,7 +88,7 @@
             this.ShowPublicMenuItem,
             this.RemoveMenuItem});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(260, 48);
+            this.contextMenu.Size = new System.Drawing.Size(260, 70);
             this.contextMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenu_Closed);
             this.contextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_Opening);
             // 
