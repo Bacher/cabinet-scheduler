@@ -12,6 +12,8 @@ namespace Scheduler
     {
         public TaskInfo info;
         public TaskState state;
+        public DateTime addingErrorTimeout = DateTime.MinValue;
+        public DateTime deletingErrorTimeout = DateTime.MinValue;
 
         public Task(string id)
         {

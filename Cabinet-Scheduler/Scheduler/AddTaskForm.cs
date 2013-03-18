@@ -43,12 +43,12 @@ namespace Scheduler
                 return;
             }
 
-            //if (checkApartment.Checked && DateTime.Now.AddDays(4).Date > datetimeEnd.Value.Date)
-            //{
-            //    MessageBox.Show("Дата выполнения не может быть меньше чем через 4 дня");
-            //    datetimeEnd.Focus();
-            //    return;
-            //}
+            if (checkApartment.Checked && DateTime.Now.AddDays(4).Date > datetimeEnd.Value.Date)
+            {
+                MessageBox.Show("Дата выполнения не может быть меньше чем через 4 дня");
+                datetimeEnd.Focus();
+                return;
+            }
 
             Directory.CreateDirectory(TASKS_FOLDER_NAME);
 

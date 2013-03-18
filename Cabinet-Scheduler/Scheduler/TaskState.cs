@@ -31,7 +31,7 @@ namespace Scheduler
             for (int i = 0, count = deletedChunks.Count; i < count; ++i)
             {
                 var pair = deletedChunks[i];
-                var THREE = 0;//3;
+                var THREE = 3;
                 if (pair.Key.AddDays(THREE) < now && index < pair.Value)
                     return true;
             }
