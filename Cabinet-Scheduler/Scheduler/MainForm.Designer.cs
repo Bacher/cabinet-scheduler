@@ -46,6 +46,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.numMaxHour = new System.Windows.Forms.NumericUpDown();
             this.numMinHour = new System.Windows.Forms.NumericUpDown();
+            this.pauseResumeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewTasks)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -86,9 +87,10 @@
             // 
             this.contextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ShowPublicMenuItem,
-            this.RemoveMenuItem});
+            this.RemoveMenuItem,
+            this.pauseResumeMenuItem});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(260, 70);
+            this.contextMenu.Size = new System.Drawing.Size(260, 92);
             this.contextMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenu_Closed);
             this.contextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_Opening);
             // 
@@ -240,6 +242,13 @@
             0,
             0});
             // 
+            // pauseResumeMenuItem
+            // 
+            this.pauseResumeMenuItem.Name = "pauseResumeMenuItem";
+            this.pauseResumeMenuItem.Size = new System.Drawing.Size(259, 22);
+            this.pauseResumeMenuItem.Text = "Приостановить/Возобновить";
+            this.pauseResumeMenuItem.Click += new System.EventHandler(this.pauseResumeMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -284,6 +293,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem ShowPublicMenuItem;
         private System.Windows.Forms.ToolStripMenuItem RemoveMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem pauseResumeMenuItem;
     }
 }
 

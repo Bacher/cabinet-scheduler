@@ -306,9 +306,17 @@ namespace Scheduler
             table.Clear();
             foreach (var task in tasksManager.tasks)
             {
+                string state = "";
+                if (task.state.index == task.info.count)
+                    state = "Завершено";
+                if (task.state.paused)
+                    state = "Приостановлено";
+                else 
+                    state = "В обработке";
+
                 table.Rows.Add(
                     task.info.id,
-                    string.Format("{0}{1}", task.info.apartment ? "[Квартиры] " : "", task.state.index == task.info.count ? "Завершено" : "В обработке"),
+                    string.Format("{0}{1}", task.info.apartment ? "[Квартиры] " : "", state),
                     task.state.index,
                     task.info.count,
                     task.info.creation,
@@ -335,7 +343,7 @@ namespace Scheduler
             {
                 var task = tasksManager.tasks[i];
 
-                if (task.deletingErrorTimeout > DateTime.Now)
+                if (task.state.paused == true || task.deletingErrorTimeout > DateTime.Now)
                     continue;
 
                 if (task.info.apartment && task.state.GetDeletingIndex() < task.info.count)
@@ -368,7 +376,7 @@ namespace Scheduler
             {
                 var task = tasksManager.tasks[i];
 
-                if (task.addingErrorTimeout > now)
+                if (task.state.paused == true || task.addingErrorTimeout > now)
                     continue;
 
                 if (task.state.addTimeout > now || task.state.index >= task.info.count)
@@ -629,6 +637,22 @@ namespace Scheduler
                         RefreshTable(sender, null);
                         return;
                     }
+                }
+            }
+        }
+
+        private void pauseResumeMenuItem_Click(object sender, EventArgs e)
+        {
+            string id = (string)gridViewTasks.SelectedRows[0].Cells["Id"].Value;
+
+            for (int i = 0; i < tasksManager.tasks.Count; ++i) {
+                var task = tasksManager.tasks[i];
+                if (task.info.id == id) {
+                    task.state.paused = !task.state.paused;
+                    tasksManager.Save();
+
+                    RefreshTable(sender, null);
+                    return;
                 }
             }
         }

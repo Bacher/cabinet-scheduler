@@ -11,6 +11,7 @@ namespace Scheduler
         public int index;
         public List<KeyValuePair<DateTime, int>> deletedChunks = new List<KeyValuePair<DateTime, int>>();
         public DateTime addTimeout;
+        public bool paused = false;
         [field: NonSerialized]
         public object locked = new object();
         [field: NonSerialized]
