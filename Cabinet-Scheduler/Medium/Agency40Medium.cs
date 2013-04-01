@@ -128,7 +128,7 @@ namespace Medium
 
             for (int i = start; i < rowCount && i < start + count; ++i)
             {
-                if (rowDataElement.ChildNodes[i].Attributes["RLT_MAIN_FOREXPORT"].Value == "+")
+                if (rowDataElement.ChildNodes[i].Attributes["RLT_MAIN_FORINTERNET"].Value == "+")
                 {
                     list.Add(rowDataElement.ChildNodes[i].Attributes["RLT_MAIN_ID"].Value);
                 }
