@@ -34,6 +34,7 @@
             this.contextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ShowPublicMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RemoveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pauseResumeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timerRun = new System.Windows.Forms.Timer(this.components);
             this.timerTableRefresher = new System.Windows.Forms.Timer(this.components);
             this.richLog = new System.Windows.Forms.RichTextBox();
@@ -46,7 +47,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.numMaxHour = new System.Windows.Forms.NumericUpDown();
             this.numMinHour = new System.Windows.Forms.NumericUpDown();
-            this.pauseResumeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewTasks)).BeginInit();
             this.contextMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -90,7 +90,7 @@
             this.RemoveMenuItem,
             this.pauseResumeMenuItem});
             this.contextMenu.Name = "contextMenu";
-            this.contextMenu.Size = new System.Drawing.Size(260, 92);
+            this.contextMenu.Size = new System.Drawing.Size(260, 70);
             this.contextMenu.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.contextMenu_Closed);
             this.contextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenu_Opening);
             // 
@@ -107,6 +107,13 @@
             this.RemoveMenuItem.Size = new System.Drawing.Size(259, 22);
             this.RemoveMenuItem.Text = "Удалить задачу";
             this.RemoveMenuItem.Click += new System.EventHandler(this.RemoveMenuItem_Click);
+            // 
+            // pauseResumeMenuItem
+            // 
+            this.pauseResumeMenuItem.Name = "pauseResumeMenuItem";
+            this.pauseResumeMenuItem.Size = new System.Drawing.Size(259, 22);
+            this.pauseResumeMenuItem.Text = "Приостановить/Возобновить";
+            this.pauseResumeMenuItem.Click += new System.EventHandler(this.pauseResumeMenuItem_Click);
             // 
             // timerRun
             // 
@@ -218,7 +225,7 @@
             this.numMaxHour.Size = new System.Drawing.Size(44, 20);
             this.numMaxHour.TabIndex = 17;
             this.numMaxHour.Value = new decimal(new int[] {
-            21,
+            11,
             0,
             0,
             0});
@@ -237,17 +244,10 @@
             this.numMinHour.Size = new System.Drawing.Size(47, 20);
             this.numMinHour.TabIndex = 16;
             this.numMinHour.Value = new decimal(new int[] {
-            9,
+            8,
             0,
             0,
             0});
-            // 
-            // pauseResumeMenuItem
-            // 
-            this.pauseResumeMenuItem.Name = "pauseResumeMenuItem";
-            this.pauseResumeMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.pauseResumeMenuItem.Text = "Приостановить/Возобновить";
-            this.pauseResumeMenuItem.Click += new System.EventHandler(this.pauseResumeMenuItem_Click);
             // 
             // MainForm
             // 

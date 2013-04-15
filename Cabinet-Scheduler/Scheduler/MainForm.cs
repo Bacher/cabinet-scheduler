@@ -18,8 +18,8 @@ namespace Scheduler
         private static string AGENCY40_URL = @"http://www.agency40.ru/mysystem/";
         private static string SETTINGS_FILE_NAME = @"Scheduler.settings";
         private static string ACCOUNTS_FILE_NAME = @"Scheduler.accounts.txt";
-        private TimeSpan startOfDay = new DateTime(2000, 1, 1, 9, 0, 0).TimeOfDay;
-        private TimeSpan endOfDay = new DateTime(2000, 1, 1, 20, 59, 0).TimeOfDay;
+        private TimeSpan startOfDay = new DateTime(2000, 1, 1, 8, 0, 0).TimeOfDay;
+        private TimeSpan endOfDay = new DateTime(2000, 1, 1, 10, 59, 0).TimeOfDay;
         private KeyValuePair<string, string> Ag40Account;
         private KeyValuePair<string, string> KHAccount;
         private TasksManager tasksManager = new TasksManager();
