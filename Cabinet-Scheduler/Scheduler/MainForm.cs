@@ -1,5 +1,4 @@
-﻿using Medium;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,6 +9,8 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
+using Medium;
+
 namespace Scheduler
 {
     public partial class MainForm : Form
@@ -19,7 +20,9 @@ namespace Scheduler
         private static string SETTINGS_FILE_NAME = @"Scheduler.settings";
         private static string ACCOUNTS_FILE_NAME = @"Scheduler.accounts.txt";
         private TimeSpan startOfDay = new DateTime(2000, 1, 1, 8, 0, 0).TimeOfDay;
-        private TimeSpan endOfDay = new DateTime(2000, 1, 1, 10, 59, 0).TimeOfDay;
+        private TimeSpan endOfDay = new DateTime(2000, 1, 1, 19, 59, 0).TimeOfDay;
+        private TimeSpan startOfDayApartments = new DateTime(2000, 1, 1, 8, 0, 0).TimeOfDay;
+        private TimeSpan endOfDayApartments = new DateTime(2000, 1, 1, 10, 59, 0).TimeOfDay;
         private KeyValuePair<string, string> Ag40Account;
         private KeyValuePair<string, string> KHAccount;
         private TasksManager tasksManager = new TasksManager();
@@ -336,6 +339,11 @@ namespace Scheduler
 
         private void CheckWorkForRemoving()
         {
+            var now = DateTime.Now;
+            if (now.TimeOfDay < startOfDayApartments || now.TimeOfDay >= endOfDayApartments) {
+                return;
+            }
+
             if (KHRemover.IsBusy)
                 return;
 
@@ -375,6 +383,9 @@ namespace Scheduler
             for (int i = 0, taskCount = tasksManager.tasks.Count; i < taskCount; ++i)
             {
                 var task = tasksManager.tasks[i];
+
+                if (task.info.apartment && (now.TimeOfDay < startOfDayApartments || now.TimeOfDay >= endOfDayApartments))
+                    continue;                    
 
                 if (task.state.paused == true || task.addingErrorTimeout > now)
                     continue;
@@ -655,6 +666,21 @@ namespace Scheduler
                     return;
                 }
             }
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void numericUpDown2_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
