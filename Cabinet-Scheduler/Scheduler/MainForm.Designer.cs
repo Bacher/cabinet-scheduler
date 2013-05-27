@@ -149,7 +149,7 @@
             // 
             // timeStartWork
             // 
-            this.timeStartWork.Location = new System.Drawing.Point(105, 370);
+            this.timeStartWork.Location = new System.Drawing.Point(105, 362);
             this.timeStartWork.Mask = "00:00";
             this.timeStartWork.Name = "timeStartWork";
             this.timeStartWork.Size = new System.Drawing.Size(42, 20);
@@ -159,7 +159,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 373);
+            this.label1.Location = new System.Drawing.Point(12, 365);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(87, 13);
             this.label1.TabIndex = 11;
@@ -168,7 +168,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(153, 373);
+            this.label2.Location = new System.Drawing.Point(153, 365);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(81, 13);
             this.label2.TabIndex = 12;
@@ -176,7 +176,7 @@
             // 
             // timeEndWork
             // 
-            this.timeEndWork.Location = new System.Drawing.Point(240, 370);
+            this.timeEndWork.Location = new System.Drawing.Point(240, 362);
             this.timeEndWork.Mask = "00:00";
             this.timeEndWork.Name = "timeEndWork";
             this.timeEndWork.Size = new System.Drawing.Size(43, 20);
@@ -186,7 +186,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(486, 373);
+            this.label3.Location = new System.Drawing.Point(486, 365);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(114, 13);
             this.label3.TabIndex = 14;
@@ -194,7 +194,7 @@
             // 
             // timeApartmentDelete
             // 
-            this.timeApartmentDelete.Location = new System.Drawing.Point(606, 370);
+            this.timeApartmentDelete.Location = new System.Drawing.Point(606, 362);
             this.timeApartmentDelete.Mask = "00:00";
             this.timeApartmentDelete.Name = "timeApartmentDelete";
             this.timeApartmentDelete.Size = new System.Drawing.Size(43, 20);
@@ -203,7 +203,7 @@
             // 
             // timeApartmentAdd
             // 
-            this.timeApartmentAdd.Location = new System.Drawing.Point(432, 370);
+            this.timeApartmentAdd.Location = new System.Drawing.Point(432, 362);
             this.timeApartmentAdd.Mask = "00:00";
             this.timeApartmentAdd.Name = "timeApartmentAdd";
             this.timeApartmentAdd.Size = new System.Drawing.Size(43, 20);
@@ -213,7 +213,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(299, 373);
+            this.label4.Location = new System.Drawing.Point(299, 365);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(127, 13);
             this.label4.TabIndex = 14;
