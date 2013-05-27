@@ -4,30 +4,33 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Scheduler
 {
+    public enum TaskType {
+        ApartmentAdding,
+        ApartmentDeleting,
+        Other
+    }
+
     [Serializable]
     public class TaskInfo
     {
         public string id;
-        public bool apartment;
+        public TaskType type;
         public DateTime creation;
         public DateTime end;
         public int count;
 
-        public int calcRemainingTimeMinutes()
+        public int calcRemainingTimeMinutes(DateTime startDay, DateTime endDay)
         {
             var now = DateTime.Now;
 
             int sum = 0;
 
-            if (now.Date == end.Date)
-            {
+            if (now.Date == end.Date) {
                 sum += (int)(end - now).TotalMinutes;
-            }
-            else
-            {
+            } else {
                 var endOfday = new DateTime(now.Year, now.Month, now.Day, 20, 59, 59);
 
-                if(endOfday > now)
+                if (endOfday > now)
                     sum += (int)(endOfday - now).TotalMinutes;
 
                 if (now.AddDays(1).Date < end.Date)

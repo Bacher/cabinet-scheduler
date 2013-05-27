@@ -12,6 +12,7 @@ namespace Medium
     {
         private HttpClient _webClient = new HttpClient();
         private string _hostUrl;
+        public bool logged = false;
 
         public Agency40Medium(string url)
         {
@@ -35,7 +36,9 @@ namespace Medium
             if (responseString.IndexOf("Ошибка авторизации. Неправильное имя пользователя или пароль.") != -1)
             {
                 throw new LoginMediumException();
-            } 
+            }
+
+            logged = true;
         }
 
         private HttpContent prepareLoginFormData(string username, string password)
@@ -108,6 +111,13 @@ namespace Medium
             }
             else
                 return null;
+        }
+
+        public static XmlDocument GetXml(string xmlFileName)
+        {
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlFileName);
+            return xmlDoc;
         }
 
         public static List<string> GetPublicItems(string fileName, int start, int count)

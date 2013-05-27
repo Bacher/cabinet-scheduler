@@ -36,17 +36,19 @@ namespace Scheduler
                 return;
             }
 
-            if (DateTime.Now >= datetimeEnd.Value.AddMinutes(1))
+            if (DateTime.Now >= datetimeEnd.Value.AddMinutes(10))
             {
                 MessageBox.Show("Дата выполнения должна быть в будущем");
                 datetimeEnd.Focus();
                 return;
             }
 
-            if (checkApartment.Checked && DateTime.Now.AddDays(4).Date > datetimeEnd.Value.Date)
-            {
-                MessageBox.Show("Дата выполнения не может быть меньше чем через 4 дня");
-                datetimeEnd.Focus();
+            TaskType type;
+            if (radioApartmentAdd.Checked) type = TaskType.ApartmentAdding;
+            else if (radioApartmentDelete.Checked) type = TaskType.ApartmentDeleting;
+            else if (radioOther.Checked) type = TaskType.Other;
+            else {
+                MessageBox.Show("Тип не указан.");
                 return;
             }
 
@@ -60,7 +62,7 @@ namespace Scheduler
 
             var taskInfo = new TaskInfo();
             taskInfo.id = id;
-            taskInfo.apartment = checkApartment.Checked;
+            taskInfo.type = type;
             taskInfo.creation = DateTime.Now;
             taskInfo.end = datetimeEnd.Value;
             taskInfo.count = getXMLCountOfRows(xmlFileName);
@@ -114,6 +116,24 @@ namespace Scheduler
             catch {
                 labelCountOfRows.Text = "Файл не подходит";
             }
+        }
+
+        private void changeFormScheme(object sender, EventArgs e)
+        {
+            if (radioApartmentAdd.Checked) {
+                label2.Visible = datetimeEnd.Visible = false;
+            }
+            else if (radioApartmentDelete.Checked) {
+                label2.Visible = datetimeEnd.Visible = true;
+            }
+            else {
+                label2.Visible = datetimeEnd.Visible = true;
+            }
+        }
+
+        private void AddTaskForm_Load(object sender, EventArgs e)
+        {
+            changeFormScheme(sender, null);
         }
     }
 }

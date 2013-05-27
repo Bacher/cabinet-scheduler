@@ -10,7 +10,7 @@ namespace Medium
     {
         private HttpClient _webClient = new HttpClient();
         private string _hostUrl;
-        private bool _logged = false;
+        public bool logged = false;
 
         private static readonly string _searchPattern = @"<td[^>]*><a href=""/item/(\d+)/"">\1</a></td>\s*<td[^>]*>{0}</td>";
 
@@ -38,7 +38,7 @@ namespace Medium
                 throw new LoginMediumException();
             }
 
-            _logged = true;
+            logged = true;
         }
 
         private HttpContent prepareLoginFormData(string username, string password)
@@ -51,7 +51,7 @@ namespace Medium
 
         public bool RemoveItemBySecondId(string id)
         {
-            if (!_logged)
+            if (!logged)
             {
                 throw new NotLoggedMediumException();
             }
@@ -97,7 +97,7 @@ namespace Medium
 
         public bool CheckItemBySecondId(string id)
         {
-            if (!_logged)
+            if (!logged)
             {
                 throw new NotLoggedMediumException();
             }

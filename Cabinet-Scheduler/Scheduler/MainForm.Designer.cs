@@ -38,25 +38,17 @@
             this.timerRun = new System.Windows.Forms.Timer(this.components);
             this.timerTableRefresher = new System.Windows.Forms.Timer(this.components);
             this.richLog = new System.Windows.Forms.RichTextBox();
-            this.btnToogleLog = new System.Windows.Forms.Button();
-            this.timerAlert = new System.Windows.Forms.Timer(this.components);
             this.btnPause = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.timeStartWork = new System.Windows.Forms.MaskedTextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.numMaxHour = new System.Windows.Forms.NumericUpDown();
-            this.numMinHour = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.timeEndWork = new System.Windows.Forms.MaskedTextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.timeApartmentDelete = new System.Windows.Forms.MaskedTextBox();
+            this.timeApartmentAdd = new System.Windows.Forms.MaskedTextBox();
             this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewTasks)).BeginInit();
             this.contextMenu.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numMaxHour)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numMinHour)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.SuspendLayout();
             // 
             // btnShowAddForm
@@ -144,23 +136,6 @@
             this.richLog.TabIndex = 2;
             this.richLog.Text = "";
             // 
-            // btnToogleLog
-            // 
-            this.btnToogleLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnToogleLog.BackColor = System.Drawing.SystemColors.Control;
-            this.btnToogleLog.Location = new System.Drawing.Point(12, 359);
-            this.btnToogleLog.Name = "btnToogleLog";
-            this.btnToogleLog.Size = new System.Drawing.Size(21, 23);
-            this.btnToogleLog.TabIndex = 3;
-            this.btnToogleLog.Text = "^";
-            this.btnToogleLog.UseVisualStyleBackColor = false;
-            this.btnToogleLog.Click += new System.EventHandler(this.btnToogleLog_Click);
-            // 
-            // timerAlert
-            // 
-            this.timerAlert.Interval = 400;
-            this.timerAlert.Tick += new System.EventHandler(this.timerAlert_Tick);
-            // 
             // btnPause
             // 
             this.btnPause.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -172,151 +147,93 @@
             this.btnPause.UseVisualStyleBackColor = true;
             this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
             // 
-            // groupBox1
+            // timeStartWork
             // 
-            this.groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.numericUpDown2);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.numericUpDown1);
-            this.groupBox1.Controls.Add(this.numMaxHour);
-            this.groupBox1.Controls.Add(this.numMinHour);
-            this.groupBox1.Location = new System.Drawing.Point(261, 351);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(499, 34);
-            this.groupBox1.TabIndex = 16;
-            this.groupBox1.TabStop = false;
-            // 
-            // label2
-            // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(176, 13);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(22, 13);
-            this.label2.TabIndex = 19;
-            this.label2.Text = "до:";
+            this.timeStartWork.Location = new System.Drawing.Point(105, 370);
+            this.timeStartWork.Mask = "00:00";
+            this.timeStartWork.Name = "timeStartWork";
+            this.timeStartWork.Size = new System.Drawing.Size(42, 20);
+            this.timeStartWork.TabIndex = 10;
+            this.timeStartWork.ValidatingType = typeof(System.DateTime);
             // 
             // label1
             // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(25, 13);
+            this.label1.Location = new System.Drawing.Point(12, 373);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(92, 13);
-            this.label1.TabIndex = 18;
-            this.label1.Text = "Время работы с:";
+            this.label1.Size = new System.Drawing.Size(87, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Начало работы:";
             // 
-            // numMaxHour
+            // label2
             // 
-            this.numMaxHour.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.numMaxHour.Enabled = false;
-            this.numMaxHour.Location = new System.Drawing.Point(201, 9);
-            this.numMaxHour.Maximum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            0});
-            this.numMaxHour.Name = "numMaxHour";
-            this.numMaxHour.Size = new System.Drawing.Size(44, 20);
-            this.numMaxHour.TabIndex = 17;
-            this.numMaxHour.Value = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(153, 373);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(81, 13);
+            this.label2.TabIndex = 12;
+            this.label2.Text = "Конец работы:";
             // 
-            // numMinHour
+            // timeEndWork
             // 
-            this.numMinHour.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.numMinHour.Enabled = false;
-            this.numMinHour.Location = new System.Drawing.Point(123, 9);
-            this.numMinHour.Maximum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            0});
-            this.numMinHour.Name = "numMinHour";
-            this.numMinHour.Size = new System.Drawing.Size(47, 20);
-            this.numMinHour.TabIndex = 16;
-            this.numMinHour.Value = new decimal(new int[] {
-            8,
-            0,
-            0,
-            0});
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.numericUpDown1.Enabled = false;
-            this.numericUpDown1.Location = new System.Drawing.Point(354, 11);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(47, 20);
-            this.numericUpDown1.TabIndex = 16;
-            this.numericUpDown1.Value = new decimal(new int[] {
-            8,
-            0,
-            0,
-            0});
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
-            // 
-            // numericUpDown2
-            // 
-            this.numericUpDown2.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.numericUpDown2.Enabled = false;
-            this.numericUpDown2.Location = new System.Drawing.Point(432, 11);
-            this.numericUpDown2.Maximum = new decimal(new int[] {
-            24,
-            0,
-            0,
-            0});
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(44, 20);
-            this.numericUpDown2.TabIndex = 17;
-            this.numericUpDown2.Value = new decimal(new int[] {
-            11,
-            0,
-            0,
-            0});
-            this.numericUpDown2.ValueChanged += new System.EventHandler(this.numericUpDown2_ValueChanged);
+            this.timeEndWork.Location = new System.Drawing.Point(240, 370);
+            this.timeEndWork.Mask = "00:00";
+            this.timeEndWork.Name = "timeEndWork";
+            this.timeEndWork.Size = new System.Drawing.Size(43, 20);
+            this.timeEndWork.TabIndex = 13;
+            this.timeEndWork.ValidatingType = typeof(System.DateTime);
             // 
             // label3
             // 
-            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(283, 13);
+            this.label3.Location = new System.Drawing.Point(486, 373);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(69, 13);
-            this.label3.TabIndex = 18;
-            this.label3.Text = "Квартиры с:";
+            this.label3.Size = new System.Drawing.Size(114, 13);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Удалять квартиры в:";
+            // 
+            // timeApartmentDelete
+            // 
+            this.timeApartmentDelete.Location = new System.Drawing.Point(606, 370);
+            this.timeApartmentDelete.Mask = "00:00";
+            this.timeApartmentDelete.Name = "timeApartmentDelete";
+            this.timeApartmentDelete.Size = new System.Drawing.Size(43, 20);
+            this.timeApartmentDelete.TabIndex = 13;
+            this.timeApartmentDelete.ValidatingType = typeof(System.DateTime);
+            // 
+            // timeApartmentAdd
+            // 
+            this.timeApartmentAdd.Location = new System.Drawing.Point(432, 370);
+            this.timeApartmentAdd.Mask = "00:00";
+            this.timeApartmentAdd.Name = "timeApartmentAdd";
+            this.timeApartmentAdd.Size = new System.Drawing.Size(43, 20);
+            this.timeApartmentAdd.TabIndex = 13;
+            this.timeApartmentAdd.ValidatingType = typeof(System.DateTime);
             // 
             // label4
             // 
-            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(407, 13);
+            this.label4.Location = new System.Drawing.Point(299, 373);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(22, 13);
-            this.label4.TabIndex = 19;
-            this.label4.Text = "до:";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
+            this.label4.Size = new System.Drawing.Size(127, 13);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "Выгружать квартиры в:";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1124, 540);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.timeApartmentAdd);
+            this.Controls.Add(this.timeApartmentDelete);
+            this.Controls.Add(this.timeEndWork);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.timeStartWork);
             this.Controls.Add(this.gridViewTasks);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnPause);
-            this.Controls.Add(this.btnToogleLog);
             this.Controls.Add(this.richLog);
             this.Controls.Add(this.btnShowAddForm);
             this.Name = "MainForm";
@@ -325,13 +242,8 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.gridViewTasks)).EndInit();
             this.contextMenu.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numMaxHour)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numMinHour)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -342,22 +254,19 @@
         private System.Windows.Forms.Timer timerRun;
         private System.Windows.Forms.Timer timerTableRefresher;
         private System.Windows.Forms.RichTextBox richLog;
-        private System.Windows.Forms.Button btnToogleLog;
-        private System.Windows.Forms.Timer timerAlert;
         private System.Windows.Forms.Button btnPause;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.NumericUpDown numMaxHour;
-        private System.Windows.Forms.NumericUpDown numMinHour;
         private System.Windows.Forms.ContextMenuStrip contextMenu;
         private System.Windows.Forms.ToolStripMenuItem ShowPublicMenuItem;
         private System.Windows.Forms.ToolStripMenuItem RemoveMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseResumeMenuItem;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.MaskedTextBox timeStartWork;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.MaskedTextBox timeEndWork;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.NumericUpDown numericUpDown2;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.MaskedTextBox timeApartmentDelete;
+        private System.Windows.Forms.MaskedTextBox timeApartmentAdd;
+        private System.Windows.Forms.Label label4;
     }
 }
 
