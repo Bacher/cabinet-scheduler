@@ -9,7 +9,7 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="TimeStartWork" Type="System.String" Scope="User">
-      <Value Profile="(Default)">09:00</Value>
+      <Value Profile="(Default)">0900</Value>
     </Setting>
     <Setting Name="TimeEndWork" Type="System.String" Scope="User">
       <Value Profile="(Default)">21:00</Value>

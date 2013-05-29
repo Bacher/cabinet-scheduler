@@ -37,7 +37,8 @@ namespace Scheduler
                 Utilities.LockThisInstance();
             } catch(ApplicationException ex) {
                 MessageBox.Show(ex.Message);
-                Close();
+                this.Close();
+                return;
             }
             if (Properties.Settings.Default.MainFormWidth != 0) {
                 Width = Properties.Settings.Default.MainFormWidth;
@@ -51,7 +52,8 @@ namespace Scheduler
 
             if (!LoadAccounts())
             {
-                Close();
+                this.Close();
+                return;
             }
 
             table.Columns.Add("Id", typeof(string));
@@ -188,7 +190,7 @@ namespace Scheduler
                 tsApartmentAdd = DateTime.Parse(timeApartmentAdd.Text);
                 tsApartmentDelete = DateTime.Parse(timeApartmentDelete.Text);
             } catch {
-                MessageBox.Show("Неправильный формат времени!");
+                Log("Неправильный формат времени!");
                 return false;
             }
             return true;
@@ -255,6 +257,11 @@ namespace Scheduler
                         continue;
 
                     if (task.info.type == TaskType.ApartmentAdding && task.info.end.Date >= now.Date && task.state.lastRunDate.Date < now.Date) {
+
+                        if (!loginAg40IfNeed(ag40)) {
+                            task.addingErrorTimeout = now.AddMinutes(5);
+                            return;
+                        }
 
                         var xmlDoc = Agency40Medium.GetXml(Path.Combine("tasks", task.info.id + ".xml"));
                         try {

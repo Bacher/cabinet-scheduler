@@ -49,7 +49,7 @@ namespace Scheduler.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("09:00")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0900")]
         public string TimeStartWork {
             get {
                 return ((string)(this["TimeStartWork"]));
