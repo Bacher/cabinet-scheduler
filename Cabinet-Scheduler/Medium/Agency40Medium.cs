@@ -82,8 +82,10 @@ namespace Medium
             return xmlBytes;
         }
 
-        public static XmlDocument GetPartOfXml(string xmlFileName, int index)
+        public static XmlDocument GetPartOfXml(string xmlFileName, int index, int count = 1)
         {
+            if (count < 0) return null;
+
             var xmlDoc = new XmlDocument();
             xmlDoc.Load(xmlFileName);
 
@@ -97,15 +99,20 @@ namespace Medium
 
                 if (index >= rowCount) return null;
 
+                int t = 0;
+
                 for (int i = 0; i < rowCount; ++i)
                 {
-                    if (i == index) continue;
+                    if (i >= index && i < index + count) continue;
 
+                    t++;
                     if (i < index)
                         rowDataElement.RemoveChild(rowDataElement.ChildNodes[0]);
                     else
-                        rowDataElement.RemoveChild(rowDataElement.ChildNodes[1]);
+                        rowDataElement.RemoveChild(rowDataElement.ChildNodes[count]);
                 }
+
+                var a = 0;
 
                 return xmlDoc;
             }

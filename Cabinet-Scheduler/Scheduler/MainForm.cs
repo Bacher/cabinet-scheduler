@@ -263,14 +263,29 @@ namespace Scheduler
                             return;
                         }
 
-                        var xmlDoc = Agency40Medium.GetXml(Path.Combine("tasks", task.info.id + ".xml"));
-                        try {
-                            ag40.UploadXML(xmlDoc);
-                        } catch {
-                            task.addingErrorTimeout = now.AddMinutes(5);
+                        var success = true;
+                        int iterationCount = 10;
+
+                        int step = (int)(task.info.count / iterationCount + 0.5);
+
+                        for (var j = 0; j < iterationCount; ++j) {
+                            var countLeast = task.info.count - step * j;
+                            var count = countLeast < step ? countLeast : step;
+
+                            var xmlDoc = Agency40Medium.GetPartOfXml(Path.Combine("tasks", task.info.id + ".xml"), step * j, count);
+                            if (xmlDoc == null) continue;
+                            try {
+                                ag40.UploadXML(xmlDoc);
+                            } catch {
+                                task.addingErrorTimeout = now.AddMinutes(5);
+                                success = false;
+                                break;
+                            }
                         }
-                        task.state.lastRunDate = now;
-                        task.Save();
+                        if(success) {
+                            task.state.lastRunDate = now;
+                            task.Save();
+                        }
                     }
                 }
             }
